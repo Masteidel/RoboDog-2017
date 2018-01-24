@@ -1,31 +1,35 @@
 //import ax12 library to send DYNAMIXEL commands
 #include <ax12.h>
+#include <PID_v1.h>
 
-unsigned long lastTime;
-double input, output, setPoint;
-double errSum, lastErr;
-double kp, ki, kd;
+double SetPoint, Input, Output;
+PID pid(&Input, &Output, &SetPoint, 1, 0, 0, DIRECT);
 
 void setup() {
 	Serial.begin(9600);
 	SetPosition(1,0);//set the position of servo # 1 to '0'
 	delay(100);//wait for servo to move
+	Input = GetPosition(1);
+	SetPoint = 1024;
+	pid.SetMode(AUTOMATIC);
 
 }
 
 void loop() {
-	//increment from 0 to 340
-	//causes servo to rotate approximately 30 degrees counterclockwise
-	for(int i=0;i<340;i++) {
-		Serial.println(GetPosition(1));//Prints current position to the serial monitor
-		SetPosition(1,i);//set the position of servo #1 to the current value of 'i'
-		delay(10);//wait for servo to move
+	if(GetPosition(1) == 0) {
+		SetPoint = 1024;
 	}
-	//decrement from 340 to 0
-	//causes servo to rotate approximately 30 degrees clockwise
-	for(int i=340;i>0;i--) {
-		Serial.println(GetPosition(1));//Prints current position to the serial monitor
-		SetPosition(1,i);//set the position of servo #1 to the current value of 'i'
-		delay(10);//wait for servo to move
+	else if(GetPosition(1) == 1024) {
+		SetPoint = 0;
 	}
+	Input = GetPosition(1);
+	pid.Compute();
+	SetPosition(1, Output);
+	Serial.print("Input: ");
+	Serial.println(Input);
+	Serial.print("Output: ");
+	Serial.println(Output);
+	Serial.print("SetPoint: ");
+	Serial.println(SetPoint);
+	Serial.println();
 }
