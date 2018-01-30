@@ -1,6 +1,6 @@
 //import ax12 library to send DYNAMIXEL commands
 #include <ax12.h>
-#include <PID_v1.h>
+//#include <PID_v1.h>
 
 double SetPoint, Input, Output;
 PID pid(&Input, &Output, &SetPoint, 1, 0, 0, DIRECT);
@@ -32,4 +32,8 @@ void loop() {
 	Serial.print("SetPoint: ");
 	Serial.println(SetPoint);
 	Serial.println();
+}
+
+void PIDcalculation() {
+	
 }
